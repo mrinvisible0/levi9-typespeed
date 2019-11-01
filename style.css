@@ -1,0 +1,13 @@
+.gameField{
+    border: 2px solid black;
+    height: 500px;
+    position: relative;
+}
+.gameInfo{
+    border: 2px dotted indianred;
+    height: 500px;
+}
+.word{
+    top: 30px;
+    position: absolute;
+}
