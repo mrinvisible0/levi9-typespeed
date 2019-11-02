@@ -1,17 +1,42 @@
 class Word {
-    constructor(word, parent){
+    constructor(word, parent, onFinished){
         this.word = word;
-        this.wordElem = createAndAppend("span", {"class": "word", "id": "word"}, parent);
-        this.wordElem.innerHTML = word;
+        this.parent = parent;
+        this.gameFieldWidth = parent.clientWidth;
+        this.onFinished = onFinished;
+        this.__createElem();
+        this.__startAnimation();
+    }
+
+    erase(){
+        if(this.intervalId){
+            clearInterval(this.intervalId);
+            this.wordElem.innerHTML = "";
+            this.parent.removeChild(this.wordElem);
+            this.intervalId = this.word = this.width = this.height = null;
+        }
+    }
+
+    // changeWordAndRestart(word){
+    //     this.word = word;
+    //     this.__createElem();
+    //     this.__startAnimation();
+    // }
+
+    __createElem(){
+        this.wordElem = createAndAppend("span", {"class": "word", "id": "word"}, this.parent);
+        this.wordElem.innerHTML = this.word;
         this.height = this.wordElem.clientHeight;
         this.wordElem.style.top = Math.floor(Math.random()*(500-this.height)) + "px";
         this.pos = 0;
         this.width = this.wordElem.clientWidth;
-        this.gameFieldWidth = parent.clientWidth;
+    }
+
+    __startAnimation(){
         this.intervalId = setInterval(()=>{
             if(this.pos + this.width >= this.gameFieldWidth){
-                clearInterval(this.intervalId);
-                this.wordElem.innerHTML="";
+                this.onFinished();
+                this.erase();
             }
             else{
                 this.pos += 10;
@@ -41,12 +66,35 @@ function load(_e) {
         ..."da se ja pitam ja bi tuda protero autobus".split(" ")]);
     const gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, root);
     const gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, root);
-    let wordObjects = [];
-    let wordObjectsTrashcan = [];
+    const scoreElem = createAndAppend("p", {}, gameInfo);
+    const missedElem = createAndAppend("p", {}, gameInfo);
+    missedElem.innerHTML = 0;
+    scoreElem.innerHTML =  0;
+    const inputField = createAndAppend("input", {"type":"text", "class": "row ml-1 mt-1"}, root);
+    let cnt = 0;
+    let missed = 0;
+    inputField.onkeypress = (e)=>{
+        if(e.key === "Enter"){
+            let text = inputField.value;
+            inputField.value = "";
+            if(wordObjectsOnScreen.hasOwnProperty(text)){
+                wordObjectsOnScreen[text].erase();
+                delete wordObjectsOnScreen[text];
+                cnt += 1;
+                scoreElem.innerHTML = cnt;
+            }
+        }
+    };
+    let wordObjectsOnScreen = {};
+    // let wordObjectsTrashcan = [];
     //this goes to another thread
     for (const word of words) {
         setTimeout(() => {
-            wordObjects.push(new Word(word, gameField));
+            wordObjectsOnScreen[word] = new Word(word, gameField, ()=>{
+                delete wordObjectsOnScreen[word];
+                missed++;
+                missedElem.innerHTML = missed;
+            });
         }, Math.floor(MIN_PERIOD + Math.random() * (MAX_PERIOD - MIN_PERIOD)))
     }
 }
