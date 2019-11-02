@@ -10,6 +10,7 @@ class Word {
 
     erase(){
         if(this.intervalId){
+            console.log("za " + this.word + " brisem " + this.intervalId);
             clearInterval(this.intervalId);
             this.wordElem.innerHTML = "";
             this.parent.removeChild(this.wordElem);
@@ -17,11 +18,11 @@ class Word {
         }
     }
 
-    // changeWordAndRestart(word){
-    //     this.word = word;
-    //     this.__createElem();
-    //     this.__startAnimation();
-    // }
+    changeWordAndRestart(word){
+        this.word = word;
+        this.__createElem();
+        this.__startAnimation();
+    }
 
     __createElem(){
         this.wordElem = createAndAppend("span", {"class": "word", "id": "word"}, this.parent);
@@ -43,6 +44,7 @@ class Word {
                 this.wordElem.style.left = this.pos + 'px';
             }
         }, 100);
+        console.log("za " + this.word + " imamo id: " + this.intervalId);
     }
 
 
@@ -55,6 +57,12 @@ function createAndAppend(tagName, attributes, appendTo){
     }
     appendTo.appendChild(el);
     return el;
+}
+
+function* getFromSet(set){
+    for(let s of set){
+        yield s;
+    }
 }
 
 function load(_e) {
@@ -79,22 +87,46 @@ function load(_e) {
             inputField.value = "";
             if(wordObjectsOnScreen.hasOwnProperty(text)){
                 wordObjectsOnScreen[text].erase();
+                let tmp = wordObjectsOnScreen[text];
+                wordObjectsOnScreen[text] = undefined;
                 delete wordObjectsOnScreen[text];
+                wordObjectsTrashcan.push(tmp);
                 cnt += 1;
                 scoreElem.innerHTML = cnt;
             }
         }
     };
     let wordObjectsOnScreen = {};
-    // let wordObjectsTrashcan = [];
-    //this goes to another thread
-    for (const word of words) {
+    let wordObjectsTrashcan = [];
+    let timeout = (wordsIterator)=>{
+        let next = wordsIterator.next();
+        if (next.done){
+            return;
+        }
         setTimeout(() => {
-            wordObjectsOnScreen[word] = new Word(word, gameField, ()=>{
-                delete wordObjectsOnScreen[word];
-                missed++;
-                missedElem.innerHTML = missed;
-            });
+            //TODO: check race condition for wordObjectsTrashcan
+            let word = next.value;
+            if(wordObjectsTrashcan.length === 0){
+                wordObjectsOnScreen[word] = new Word(word, gameField, ()=>{
+                    let tmp = wordObjectsOnScreen[word];
+                    if(tmp === undefined){
+                        console.log("imam undef za " + word);
+                    }
+                    wordObjectsOnScreen[word] = undefined;
+                    delete wordObjectsOnScreen[word];
+                    wordObjectsTrashcan.push(tmp);
+                    missed++;
+                    missedElem.innerHTML = missed;
+                });
+            }
+            else{
+                let tmp = wordObjectsTrashcan.pop();
+                tmp.changeWordAndRestart(word);
+            }
+            timeout(wordsIterator);
         }, Math.floor(MIN_PERIOD + Math.random() * (MAX_PERIOD - MIN_PERIOD)))
-    }
+
+    };
+    let wordsGenerator = getFromSet(words);
+    timeout(wordsGenerator);
 }
