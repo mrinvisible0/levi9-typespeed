@@ -10,7 +10,6 @@ class Word {
 
     erase(){
         if(this.intervalId){
-            console.log("za " + this.word + " brisem " + this.intervalId);
             clearInterval(this.intervalId);
             this.wordElem.innerHTML = "";
             this.parent.removeChild(this.wordElem);
@@ -36,7 +35,7 @@ class Word {
     __startAnimation(){
         this.intervalId = setInterval(()=>{
             if(this.pos + this.width >= this.gameFieldWidth){
-                this.onFinished();
+                this.onFinished(this.word);
                 this.erase();
             }
             else{
@@ -44,7 +43,6 @@ class Word {
                 this.wordElem.style.left = this.pos + 'px';
             }
         }, 100);
-        console.log("za " + this.word + " imamo id: " + this.intervalId);
     }
 
 
@@ -65,10 +63,12 @@ function* getFromSet(set){
     }
 }
 
+//TODO: this function is way to big, refactor to class, make use of encapsulation
+//      get rid of arrow functions, they are there only bcs they capture scope, once it is class, there is no need for that
 function load(_e) {
     const root = $("#root")[0];
-    const MIN_PERIOD = 500;
-    const MAX_PERIOD = 2000;
+    const MIN_PERIOD = 1500;
+    const MAX_PERIOD = 5000;
     let words = new Set(["trlababalan",
         ..."nisam nisam devojka tvoga druga".split(" "),
         ..."da se ja pitam ja bi tuda protero autobus".split(" ")]);
@@ -98,6 +98,15 @@ function load(_e) {
     };
     let wordObjectsOnScreen = {};
     let wordObjectsTrashcan = [];
+
+    let onFinished = (word)=>{
+        let tmp = wordObjectsOnScreen[word];
+        wordObjectsOnScreen[word] = undefined;
+        delete wordObjectsOnScreen[word];
+        wordObjectsTrashcan.push(tmp);
+        missed++;
+        missedElem.innerHTML = missed;
+    };
     let timeout = (wordsIterator)=>{
         let next = wordsIterator.next();
         if (next.done){
@@ -106,22 +115,13 @@ function load(_e) {
         setTimeout(() => {
             //TODO: check race condition for wordObjectsTrashcan
             let word = next.value;
-            if(wordObjectsTrashcan.length === 0){
-                wordObjectsOnScreen[word] = new Word(word, gameField, ()=>{
-                    let tmp = wordObjectsOnScreen[word];
-                    if(tmp === undefined){
-                        console.log("imam undef za " + word);
-                    }
-                    wordObjectsOnScreen[word] = undefined;
-                    delete wordObjectsOnScreen[word];
-                    wordObjectsTrashcan.push(tmp);
-                    missed++;
-                    missedElem.innerHTML = missed;
-                });
+            if(wordObjectsTrashcan.length === 0) {
+                wordObjectsOnScreen[word] = new Word(word, gameField, onFinished);
             }
             else{
                 let tmp = wordObjectsTrashcan.pop();
                 tmp.changeWordAndRestart(word);
+                wordObjectsOnScreen[word] = tmp;
             }
             timeout(wordsIterator);
         }, Math.floor(MIN_PERIOD + Math.random() * (MAX_PERIOD - MIN_PERIOD)))
