@@ -10,6 +10,7 @@ class Word {
 
     erase(){
         if(this.intervalId){
+
             clearInterval(this.intervalId);
             this.wordElem.innerHTML = "";
             this.parent.removeChild(this.wordElem);
@@ -71,7 +72,11 @@ function load(_e) {
     const MAX_PERIOD = 5000;
     let words = new Set(["trlababalan",
         ..."nisam nisam devojka tvoga druga".split(" "),
-        ..."da se ja pitam ja bi tuda protero autobus".split(" ")]);
+        ..."da se ja pitam ja bi tuda protero autobus".split(" "), "stewardess"]);
+    let r = new WordDifficultyMeter(qwerty);
+    for(let s of words){
+        console.log(s + ": " + r.meassure(s));
+    }
     const gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, root);
     const gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, root);
     const scoreElem = createAndAppend("p", {}, gameInfo);
