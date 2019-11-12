@@ -1,7 +1,7 @@
 class Game {
     constructor() {
         this.root = $("#GameRoot")[0];
-        //these will regulate game speed
+        //these will regulate Game speed
         this.MIN_PERIOD = 1500;
         this.MAX_PERIOD = 5000;
         //set of words, will be populated later
