@@ -1,24 +1,22 @@
 class Game {
     constructor() {
-        this.root = $("#GameRoot")[0];
-        //these will regulate Game speed
-        this.MIN_PERIOD = 1500;
-        this.MAX_PERIOD = 5000;
+        this.__root = $("#GameRoot")[0];
+        this.__currentLevel = new Level(1000, 3000);
         //set of words, will be populated later
-        this.words = new Set(["trlababalan",
+        this.__words = new Set(["trlababalan",
             ..."nisam nisam devojka tvoga druga".split(" "),
             ..."da se ja pitam ja bi tuda protero autobus".split(" "), "stewardess", "koliko"]);
 
         this.__initGameLayout();
         //counters
-        this.correctCount = 0;
-        this.missedCount = 0;
+        this.__correctCount = 0;
+        this.__missedCount = 0;
 
         //generator
-        this.wordsGenerator = this.__getWordGenerator();
+        this.__wordsGenerator = this.__getWordGenerator();
 
-        this.wordObjectsOnScreen = {};
-        this.wordObjectsTrashcan = [];
+        this.__wordObjectsOnScreen = {};
+        this.__wordObjectsTrashcan = [];
 
         //explicit bindings
         for(let p of Object.getOwnPropertyNames(Game.prototype)) {
@@ -30,68 +28,71 @@ class Game {
 
     //generator
     * __getWordGenerator(){
-        for(let s of this.words){
+        for(let s of this.__words){
             yield s;
         }
     }
     __initGameLayout() {
-        this.gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, this.root);
-        this.gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, this.root);
-        this.scoreElem = createAndAppend("p", {}, this.gameInfo);
-        this.missedElem = createAndAppend("p", {}, this.gameInfo);
-        this.missedElem.innerHTML = 0;
-        this.scoreElem.innerHTML = 0;
-        this.inputField = createAndAppend("input", {"type": "text", "class": "row ml-1 mt-1"}, this.root);
+        this.__gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, this.__root);
+        this.__gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, this.__root);
+        this.__scoreElem = createAndAppend("p", {}, this.__gameInfo);
+        this.__missedElem = createAndAppend("p", {}, this.__gameInfo);
+        this.__missedElem.innerHTML = 0;
+        this.__scoreElem.innerHTML = 0;
+        this.__inputField = createAndAppend("input", {"type": "text", "class": "row ml-1 mt-1"}, this.__root);
         //has to be lambda
-        this.inputField.onkeypress = (e)=>this.__inputFieldOnPressHandler(e);
+        this.__inputField.onkeypress = (e)=>this.__inputFieldOnPressHandler(e);
     }
 
     __inputFieldOnPressHandler(e){
         if(e.key === "Enter"){
-            console.log(this);
-            let text = this.inputField.value;
-            this.inputField.value = "";
-            if(this.wordObjectsOnScreen.hasOwnProperty(text)){
-                this.wordObjectsOnScreen[text].erase();
+            let text = this.__inputField.value;
+            this.__inputField.value = "";
+            if(this.__wordObjectsOnScreen.hasOwnProperty(text)){
+                this.__wordObjectsOnScreen[text].erase();
                 this.__throwInTrashcan(text);
-                this.correctCount += 1;
-                this.scoreElem.innerHTML = this.correctCount;
+                this.__correctCount += this.__currentLevel.reward;
+                if(this.__correctCount % 5 === 0){
+                    this.__currentLevel.increaseWordSpeed();
+                }
+                this.__scoreElem.innerHTML = this.__correctCount;
             }
         }
     }
 
     //takes word(string), throws in trashcan object with that word
     __throwInTrashcan(word){
-        let tmp = this.wordObjectsOnScreen[word];
-        this.wordObjectsOnScreen[word] = undefined;
-        delete this.wordObjectsOnScreen[word];
-        this.wordObjectsTrashcan.push(tmp);
+        let tmp = this.__wordObjectsOnScreen[word];
+        this.__wordObjectsOnScreen[word] = undefined;
+        delete this.__wordObjectsOnScreen[word];
+        this.__wordObjectsTrashcan.push(tmp);
     }
 
     __onWordOutOfBounds(word){
         this.__throwInTrashcan(word);
-        this.missedCount++;
-        this.missedElem.innerHTML = this.missedCount;
+        this.__missedCount++;
+        this.__missedElem.innerHTML = this.__missedCount;
     }
 
     __wordInserter(){
-        let next = this.wordsGenerator.next();
+        let next = this.__wordsGenerator.next();
         if (next.done){
             return;
         }
         setTimeout(() => {
             //TODO: check race condition for wordObjectsTrashcan
             let word = next.value;
-            if(this.wordObjectsTrashcan.length === 0) {
-                this.wordObjectsOnScreen[word] = new Word(word, this.gameField, this.__onWordOutOfBounds);
+            if(this.__wordObjectsTrashcan.length === 0) {
+                this.__wordObjectsOnScreen[word] = new Word(word, this.__gameField, this.__onWordOutOfBounds,
+                                                            this.__currentLevel.wordTimeout());
             }
             else{
-                let tmp = this.wordObjectsTrashcan.pop();
-                tmp.changeWordAndRestart(word);
-                this.wordObjectsOnScreen[word] = tmp;
+                let tmp = this.__wordObjectsTrashcan.pop();
+                tmp.changeWordAndRestart(word, this.__currentLevel.wordTimeout());
+                this.__wordObjectsOnScreen[word] = tmp;
             }
             this.__wordInserter();
-        }, Math.floor(this.MIN_PERIOD + Math.random() * (this.MAX_PERIOD - this.MIN_PERIOD)))
+        }, Math.floor(randomInRange(this.__currentLevel.minSpawnPeriod, this.__currentLevel.maxSpawnPeriod)));
     }
 
     start(){
@@ -99,6 +100,9 @@ class Game {
     }
 }
 
+function randomInRange(min, max){
+    return min + Math.random() * (max - min);
+}
 
 
 
