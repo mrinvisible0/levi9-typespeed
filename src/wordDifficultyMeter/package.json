@@ -1,0 +1,11 @@
+{
+  "name": "worddifficultymeter",
+  "version": "1.0.0",
+  "description": "This whole word difficulty metrics is taken from [here](https://github.com/MadRabbit/halmak), I have just modifies it so that I can use it appropriately.",
+  "main": "measurer.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
