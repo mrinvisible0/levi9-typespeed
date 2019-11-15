@@ -1,4 +1,4 @@
-const layout = qwerty;
+const layout = serbian;
 function measureTextDifficulty(text) {
     const sameFingerPenalty = SAME_FINGER_PENALTY;
     const sameHandPenalty   = SAME_HAND_PENALTY;
