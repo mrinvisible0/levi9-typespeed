@@ -1,10 +1,11 @@
 class Word {
-    constructor(word, parent, onFinished, timeout){
+    constructor(word, parent, onFinished, timeout, reward){
         this.__setWord(word);
         this.__parent = parent;
         this.__gameFieldWidth = parent.clientWidth;
         this.__onFinished = onFinished;
         this.__timeout = timeout;
+        this.reward = reward;
         this.__createElem();
         this.__startAnimation();
     }
@@ -14,7 +15,7 @@ class Word {
             clearInterval(this.__intervalId);
             this.__wordElem.innerHTML = "";
             this.__parent.removeChild(this.__wordElem);
-            this.__intervalId = this.__word = this.__width = this.__height = null;
+            this.__intervalId = this.__word = this.__width = this.__height = this.reward = null;
         }
     }
 
@@ -23,9 +24,10 @@ class Word {
         this.difficulty = measureTextDifficulty(word);
     }
 
-    changeWordAndRestart(word, timeout){
+    changeWordAndRestart(word, timeout, reward){
         this.__setWord(word);
         this.__timeout = timeout;
+        this.reward = reward;
         this.__createElem();
         this.__startAnimation();
     }
