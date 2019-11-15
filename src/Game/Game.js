@@ -19,8 +19,8 @@ class Game {
 
         //generator
         this.__serbianWordsGenerator = null;
-        this.__englishWordsGenerator = null;
-        this.__wordsGenerator = null;
+        // this.__englishWordsGenerator = null;
+        this.__wordsGenerator = null; // maybe someday I will add more languages so this will stay as single point of entry
         this.__wordObjectsOnScreen = {};
         this.__wordObjectsTrashcan = [];
         this.__ready = false;
@@ -32,18 +32,20 @@ class Game {
             }
         }
         this.__serbianWords = null;
-        this.__englishWords = null;
+        // this.__englishWords = null;
         let basePath = "http://localhost:63342/levi9-typespeed/data/";
         $.get(basePath + "sr_cleaned.txt", (r)=>{
             this.__serbianWords = new Set(r.split("\n"));
             this.__serbianWordsGenerator = this.__getWordGenerator(this.__serbianWords);
             this.__wordsGenerator = this.__serbianWordsGenerator;
-            $.get(basePath + "en_cleaned.txt", (r)=>{
-                this.__englishWords = new Set(r.split("\n"));
-                this.__englishWordsGenerator = this.__getWordGenerator(this.__englishWords);
-                this.__ready = true;
-                this.__begin();
-            });
+            this.__ready = true;
+            this.__begin();
+            // $.get(basePath + "en_cleaned.txt", (r)=>{
+            //     this.__englishWords = new Set(r.split("\n"));
+            //     this.__englishWordsGenerator = this.__getWordGenerator(this.__englishWords);
+            //     this.__ready = true;
+            //     this.__begin();
+            // });
         });
 
     }
