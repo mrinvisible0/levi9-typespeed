@@ -1,18 +1,7 @@
-LEVELS = [
-    [1000,2000, 1],
-    [500,1600, 2],
-    [200, 1200, 3],
-    [100, 800, 4],
-    [50, 400, 5]
-];
-
-//skalirati sve na 1-10
-//nadji percantile i povezati ih sa nivoima
 class Game {
     constructor() {
         this.__root = $("#GameRoot")[0];
-        this.__currLevelIndex = 0;
-        this.__currentLevel = new Level(...LEVELS[this.__currLevelIndex]);
+        this.__currentLevel = null;
         this.__initGameLayout();
         //counters
         this.__score = 0;
@@ -54,11 +43,16 @@ class Game {
             this.__words.sort((x, y)=>{
                 return x.diff > y.diff;
             });
-            this.__wordsGenerator = this.__getWordGenerator(this.__words);
+            this.__levelsControler = new LevelsController(this.__words, this.onLevelUp);
             this.__ready = true;
             this.__begin();
         });
 
+    }
+
+    onLevelUp(lvl, words){
+        this.__currentLevel = lvl;
+        this.__wordsGenerator = this.__getWordGenerator(words);
     }
 
     //generator
@@ -87,12 +81,7 @@ class Game {
                 this.__score += this.__wordObjectsOnScreen[text].reward;
                 this.__wordObjectsOnScreen[text].erase();
                 this.__throwInTrashcan(text);
-                this.__correctCount ++;
-                if(this.__correctCount % 5 === 0){
-                    if(!this.__currentLevel.increaseWordSpeed()){
-                        this.__currentLevel = new Level(...LEVELS[++this.__currLevelIndex]);
-                    }
-                }
+                this.__levelsControler.handleCorrectWord();
                 this.__scoreElem.innerHTML = this.__score;
             }
         }
@@ -118,7 +107,6 @@ class Game {
             return;
         }
         setTimeout(() => {
-            //TODO: check race condition for wordObjectsTrashcan
             let wordObj = next.value;
             let word = wordObj.word;
             // let diff = wordObj.diff;
@@ -135,7 +123,7 @@ class Game {
         }, Math.floor(randomInRange(this.__currentLevel.minSpawnPeriod, this.__currentLevel.maxSpawnPeriod)));
     }
 
-    //this function is given to user, he can start it but game wont begin until all data is ready
+    //this function is given to user, he can start it but game won't begin until all data is ready
     start(){
         this.__started = true;
         this.__begin();

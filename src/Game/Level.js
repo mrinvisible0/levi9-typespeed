@@ -7,9 +7,11 @@ class Level{
         this.reward = reward;
     }
     increaseWordSpeed(){
-        this.__wordSpeed -= 100;
-        this.reward ++;
-        return this.__wordSpeed !== 0;
+        if(this.__wordSpeed > 100){
+            this.__wordSpeed -= 100;
+            this.reward ++;
+        }
+        return this.__wordSpeed > 100;
     }
     wordTimeout(){
         return this.__wordSpeed;
