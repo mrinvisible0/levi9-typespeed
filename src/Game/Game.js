@@ -6,6 +6,8 @@ LEVELS = [
     [50, 400, 5]
 ];
 
+//skalirati sve na 1-10
+//nadji percantile i povezati ih sa nivoima
 class Game {
     constructor() {
         this.__root = $("#GameRoot")[0];
@@ -18,9 +20,7 @@ class Game {
         this.__missedCount = 0;
 
         //generator
-        this.__serbianWordsGenerator = null;
-        // this.__englishWordsGenerator = null;
-        this.__wordsGenerator = null; // maybe someday I will add more languages so this will stay as single point of entry
+        this.__wordsGenerator = null;
         this.__wordObjectsOnScreen = {};
         this.__wordObjectsTrashcan = [];
         this.__ready = false;
@@ -31,28 +31,39 @@ class Game {
                 this[p] = this[p].bind(this);
             }
         }
-        this.__serbianWords = null;
-        // this.__englishWords = null;
+        this.__words = null;
         let basePath = "http://localhost:63342/levi9-typespeed/data/";
-        $.get(basePath + "sr_cleaned.txt", (r)=>{
-            this.__serbianWords = new Set(r.split("\n"));
-            this.__serbianWordsGenerator = this.__getWordGenerator(this.__serbianWords);
-            this.__wordsGenerator = this.__serbianWordsGenerator;
+        $.get(basePath + "sr_measured.txt", (r)=>{
+            let maxDiff = 0;
+            let minDiff = 3000;
+            this.__words = r.split("\n").map((w)=>{
+                let tmp = w.split(" ");
+                let word = tmp[0];
+                let diff = parseInt(tmp[1], 10);
+                if(diff < minDiff){
+                    minDiff = diff;
+                }
+                else if(diff > maxDiff){
+                    maxDiff = diff;
+                }
+                return {
+                    word: word,
+                    diff: diff
+                }
+            });
+            this.__words.sort((x, y)=>{
+                return x.diff > y.diff;
+            });
+            this.__wordsGenerator = this.__getWordGenerator(this.__words);
             this.__ready = true;
             this.__begin();
-            // $.get(basePath + "en_cleaned.txt", (r)=>{
-            //     this.__englishWords = new Set(r.split("\n"));
-            //     this.__englishWordsGenerator = this.__getWordGenerator(this.__englishWords);
-            //     this.__ready = true;
-            //     this.__begin();
-            // });
         });
 
     }
 
     //generator
-    __getWordGenerator = function*(set) {
-        for(let s of set){
+    * __getWordGenerator(collection) {
+        for(let s of collection){
             yield s;
         }
     };
@@ -108,7 +119,9 @@ class Game {
         }
         setTimeout(() => {
             //TODO: check race condition for wordObjectsTrashcan
-            let word = next.value;
+            let wordObj = next.value;
+            let word = wordObj.word;
+            // let diff = wordObj.diff;
             if(this.__wordObjectsTrashcan.length === 0) {
                 this.__wordObjectsOnScreen[word] = new Word(word, this.__gameField, this.__onWordOutOfBounds,
                                                             this.__currentLevel.wordTimeout(), this.__currentLevel.reward);

@@ -21,7 +21,6 @@ class Word {
 
     __setWord(word){
         this.__word = word;
-        this.difficulty = measureTextDifficulty(word);
     }
 
     changeWordAndRestart(word, timeout, reward){
