@@ -20,6 +20,10 @@ class Game {
             }
         }
         this.__words = null;
+        //NOTE:
+        //THIS PATH/URL WORKS ON MY LOCAL MACHINE WHEN PROJECT IS RAN BY WEBSTORM
+        //for testing, either run in webstorm and possibly change port number or run by some other local
+        //server
         let basePath = "http://localhost:63342/levi9-typespeed/data/";
         $.get(basePath + "sr_measured.txt", (r)=>{
             let maxDiff = 0;
