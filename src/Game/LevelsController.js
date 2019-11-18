@@ -5,11 +5,11 @@
 class LevelsController{
     constructor(words, onLevelUp){
         this.__levelsData = [
-            [1000, 2000, 1],
-            [500, 1600, 2],
-            [200, 1200, 3],
-            [100, 800, 4],
-            [50, 400, 5]
+            [1500, 2000, 1],
+            [1000, 1600, 2],
+            [500, 1200, 3],
+            [200, 800, 4],
+            [100, 400, 5]
         ];
         this.__currentLevelIndex = -1;
         this.__currentLevel = null;
@@ -29,7 +29,6 @@ class LevelsController{
             }
         }
         this.__levelUp();
-        // this.__onLevelUp(this.__currentLevel, this.__currentWords);// 1st level
     }
     //called by Game to notify lvlController that new words has been correctly typed
     //this function determines when to level up
