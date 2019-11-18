@@ -1,7 +1,6 @@
 
 //takes sorted array (by difficulty) of words(or rather {word, diff} objects) and callback
 //on each level, it provides harder words
-
 class LevelsController{
     constructor(words, onLevelUp){
         this.__levelsData = [

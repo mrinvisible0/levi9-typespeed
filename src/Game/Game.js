@@ -5,9 +5,8 @@ class Game {
         this.__initGameLayout();
         //counters
         this.__score = 0;
-        this.__correctCount = 0;
         this.__missedCount = 0;
-
+        this.__gameOver = false;
         //generator
         this.__wordsGenerator = null;
         this.__wordObjectsOnScreen = {};
@@ -106,10 +105,23 @@ class Game {
         this.__wordObjectsTrashcan.push(tmp);
     }
 
+    __gameOverCondition(){
+        return this.__missedCount > this.__score;
+    }
+
     __onWordOutOfBounds(word){
-        this.__throwInTrashcan(word);
         this.__missedCount++;
         this.__missedElem.innerHTML = this.__missedCount;
+
+        if((this.__gameOver = this.__gameOverCondition())){
+            for(let [k,v] of Object.entries(this.__wordObjectsOnScreen)){
+                v.erase();
+            }
+            alert("KRAJ! OSTVARILI STE " + this.__score + " POENA!");
+            return;
+        }
+        //this is called only if it is not game over
+        this.__throwInTrashcan(word);
     }
 
     __wordInserter(){
@@ -118,19 +130,19 @@ class Game {
             return;
         }
         setTimeout(() => {
-            let wordObj = next.value;
-            let word = wordObj.word;
-            // let diff = wordObj.diff;
-            if(this.__wordObjectsTrashcan.length === 0) {
-                this.__wordObjectsOnScreen[word] = new Word(word, this.__gameField, this.__onWordOutOfBounds,
-                                                            this.__currentLevel.wordTimeout(), this.__currentLevel.reward);
+            if(!this.__gameOver) {
+                let wordObj = next.value;
+                let word = wordObj.word;
+                if (this.__wordObjectsTrashcan.length === 0) {
+                    this.__wordObjectsOnScreen[word] = new Word(word, this.__gameField, this.__onWordOutOfBounds,
+                        this.__currentLevel.wordTimeout(), this.__currentLevel.reward);
+                } else {
+                    let tmp = this.__wordObjectsTrashcan.pop();
+                    tmp.changeWordAndRestart(word, this.__currentLevel.wordTimeout(), this.__currentLevel.reward);
+                    this.__wordObjectsOnScreen[word] = tmp;
+                }
+                this.__wordInserter();
             }
-            else{
-                let tmp = this.__wordObjectsTrashcan.pop();
-                tmp.changeWordAndRestart(word, this.__currentLevel.wordTimeout(), this.__currentLevel.reward);
-                this.__wordObjectsOnScreen[word] = tmp;
-            }
-            this.__wordInserter();
         }, Math.floor(randomInRange(this.__currentLevel.minSpawnPeriod, this.__currentLevel.maxSpawnPeriod)));
     }
 
