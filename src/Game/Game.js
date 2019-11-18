@@ -64,8 +64,19 @@ class Game {
     __initGameLayout() {
         this.__gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, this.__root);
         this.__gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, this.__root);
-        this.__scoreElem = createAndAppend("p", {}, this.__gameInfo);
-        this.__missedElem = createAndAppend("p", {}, this.__gameInfo);
+
+
+        this.__scoreWraper = createAndAppend("div", {"class" : "row"}, this.__gameInfo);
+        this.__scoreLabel = createAndAppend("p", {"class": "col-5"}, this.__scoreWraper);
+        this.__scoreLabel.innerHTML = "Poeni: ";
+        this.__scoreElem = createAndAppend("p", {"class": "col"}, this.__scoreWraper);
+
+        this.__missedWraper = createAndAppend("div", {"class" : "row"}, this.__gameInfo);
+        this.__missedLabel = createAndAppend("p", {"class": "col-5"}, this.__missedWraper);
+        this.__missedLabel.innerHTML = "Promašaji: ";
+        this.__missedElem = createAndAppend("p", {"class": "col"}, this.__missedWraper);
+
+
         this.__missedElem.innerHTML = 0;
         this.__scoreElem.innerHTML = 0;
         this.__inputField = createAndAppend("input", {"type": "text", "class": "row ml-1 mt-1"}, this.__root);
