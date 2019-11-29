@@ -1,18 +1,8 @@
 class Game {
     constructor() {
         this.__root = $("#GameRoot")[0];
-        this.__currentLevel = null;
         this.__initGameLayout();
-        //counters
-        this.__score = 0;
-        this.__missedCount = 0;
-        this.__gameOver = false;
-        //generator
-        this.__wordsGenerator = null;
-        this.__wordObjectsOnScreen = {};
-        this.__wordObjectsTrashcan = [];
-        this.__ready = false;
-        this.__started = false;
+        this._setInitValues();
         //explicit bindings
         for(let p of Object.getOwnPropertyNames(Game.prototype)) {
             if(p !== "constructor" && typeof this[p] === "function"){
@@ -51,6 +41,29 @@ class Game {
             this.__begin();
         });
 
+    }
+
+    _setInitValues(){
+        this.__currentLevel = null;
+        //counters
+        this.__score = 0;
+        this.__missedCount = 0;
+        this.__gameOver = false;
+        //generator
+        this.__wordsGenerator = null;
+        this.__wordObjectsOnScreen = {};
+        this.__wordObjectsTrashcan = [];
+        this.__ready = false;
+        this.__started = false;
+        // this.__levelsControler = new LevelsController(this.__words, this.onLevelUp);
+    }
+
+    reset(){
+        this._setInitValues();
+        this.__missedElem.innerHTML = 0;
+        this.__scoreElem.innerHTML = 0;
+        this.__levelsControler = new LevelsController(this.__words, this.onLevelUp);
+        this.__wordInserter();
     }
 
     onLevelUp(lvl, words){
@@ -121,8 +134,12 @@ class Game {
             for(let [k,v] of Object.entries(this.__wordObjectsOnScreen)){
                 v.erase();
             }
-            alert("KRAJ! OSTVARILI STE " + this.__score + " POENA!");
-            return;
+            if(confirm("KRAJ! OSTVARILI STE " + this.__score + " POENA!\nDa li želite da krenete ponovo?")){
+                this.reset();
+            }
+            else {
+                return;
+            }
         }
         //this is called only if it is not game over
         this.__throwInTrashcan(word);
