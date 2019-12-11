@@ -1,56 +1,56 @@
 class Word {
     constructor(word, parent, onFinished, timeout, reward){
-        this.__setWord(word);
-        this.__parent = parent;
-        this.__gameFieldWidth = parent.clientWidth;
-        this.__onFinished = onFinished;
-        this.__timeout = timeout;
+        this.setWord(word);
+        this.parent = parent;
+        this.gameFieldWidth = parent.clientWidth;
+        this.onFinished = onFinished;
+        this.timeout = timeout;
         this.reward = reward;
-        this.__createElem();
-        this.__startAnimation();
+        this.createElem();
+        this.startAnimation();
     }
 
     erase(){
-        if(this.__intervalId){
-            clearInterval(this.__intervalId);
-            this.__wordElem.innerHTML = "";
-            this.__parent.removeChild(this.__wordElem);
-            this.__intervalId = this.__word = this.__width = this.__height = this.reward = null;
+        if(this.intervalId){
+            clearInterval(this.intervalId);
+            this.wordElem.innerHTML = "";
+            this.parent.removeChild(this.wordElem);
+            this.intervalId = this.word = this.width = this.height = this.reward = null;
         }
     }
 
-    __setWord(word){
-        this.__word = word;
+    setWord(word){
+        this.word = word;
     }
 
     changeWordAndRestart(word, timeout, reward){
-        this.__setWord(word);
-        this.__timeout = timeout;
+        this.setWord(word);
+        this.timeout = timeout;
         this.reward = reward;
-        this.__createElem();
-        this.__startAnimation();
+        this.createElem();
+        this.startAnimation();
     }
 
-    __createElem(){
-        this.__wordElem = createAndAppend("span", {"class": "word", "id": "word"}, this.__parent);
-        this.__wordElem.innerHTML = this.__word;
-        this.__height = this.__wordElem.clientHeight;
-        this.__wordElem.style.top = Math.floor(Math.random()*(500-this.__height)) + "px";
-        this.__pos = 0;
-        this.__width = this.__wordElem.clientWidth;
+    createElem(){
+        this.wordElem = createAndAppend("span", {"class": "word", "id": "word"}, this.parent);
+        this.wordElem.innerHTML = this.word;
+        this.height = this.wordElem.clientHeight;
+        this.wordElem.style.top = Math.floor(Math.random()*(500-this.height)) + "px";
+        this.pos = 0;
+        this.width = this.wordElem.clientWidth;
     }
 
-    __startAnimation(){
-        this.__intervalId = setInterval(()=>{
-            if(this.__pos + this.__width >= this.__gameFieldWidth){
-                this.__onFinished(this.__word);
+    startAnimation(){
+        this.intervalId = setInterval(()=>{
+            if(this.pos + this.width >= this.gameFieldWidth){
+                this.onFinished(this.word);
                 this.erase();
             }
             else{
-                this.__pos += 10;
-                this.__wordElem.style.left = this.__pos + 'px';
+                this.pos += 10;
+                this.wordElem.style.left = this.pos + 'px';
             }
-        }, this.__timeout);
+        }, this.timeout);
     }
 
 

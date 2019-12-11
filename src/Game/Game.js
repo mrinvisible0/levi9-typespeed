@@ -1,15 +1,15 @@
 class Game {
     constructor() {
-        this.__root = $("#GameRoot")[0];
-        this.__initGameLayout();
-        this._setInitValues();
+        this.root = $("#GameRoot")[0];
+        this.initGameLayout();
+        this.setInitValues();
         //explicit bindings
         for(let p of Object.getOwnPropertyNames(Game.prototype)) {
             if(p !== "constructor" && typeof this[p] === "function"){
                 this[p] = this[p].bind(this);
             }
         }
-        this.__words = null;
+        this.words = null;
         //NOTE:
         //THIS PATH/URL WORKS ON MY LOCAL MACHINE WHEN PROJECT IS RAN BY WEBSTORM
         //for testing, either run in webstorm and possibly change port number or run by some other local
@@ -18,7 +18,7 @@ class Game {
         $.get(basePath + "sr_measured.txt", (r)=>{
             let maxDiff = 0;
             let minDiff = 3000;
-            this.__words = r.split("\n").map((w)=>{
+            this.words = r.split("\n").map((w)=>{
                 let tmp = w.split(" ");
                 let word = tmp[0];
                 let diff = parseInt(tmp[1], 10);
@@ -33,113 +33,112 @@ class Game {
                     diff: diff
                 }
             });
-            this.__words.sort((x, y)=>{
+            this.words.sort((x, y)=>{
                 return x.diff > y.diff;
             });
-            this.__levelsControler = new LevelsController(this.__words, this.onLevelUp);
-            this.__ready = true;
-            this.__begin();
+            this.levelsControler = new LevelsController(this.words, this.onLevelUp);
+            this.ready = true;
+            this.begin();
         });
 
     }
 
-    _setInitValues(){
-        this.__currentLevel = null;
+    setInitValues(){
+        this.currentLevel = null;
         //counters
-        this.__score = 0;
-        this.__missedCount = 0;
-        this.__gameOver = false;
+        this.score = 0;
+        this.missedCount = 0;
+        this.gameOver = false;
         //generator
-        this.__wordsGenerator = null;
-        this.__wordObjectsOnScreen = {};
-        this.__wordObjectsTrashcan = [];
-        this.__ready = false;
-        this.__started = false;
-        // this.__levelsControler = new LevelsController(this.__words, this.onLevelUp);
+        this.wordsGenerator = null;
+        this.wordObjectsOnScreen = {};
+        this.wordObjectsTrashcan = [];
+        this.ready = false;
+        this.started = false;
+        // this.levelsControler = new LevelsController(this.words, this.onLevelUp);
     }
 
     reset(){
-        console.log("reset");
-        this._setInitValues();
-        this.__missedElem.innerHTML = 0;
-        this.__scoreElem.innerHTML = 0;
-        this.__levelsControler = new LevelsController(this.__words, this.onLevelUp);
-        this.__wordInserter();
+        this.setInitValues();
+        this.missedElem.innerHTML = 0;
+        this.scoreElem.innerHTML = 0;
+        this.levelsControler = new LevelsController(this.words, this.onLevelUp);
+        this.wordInserter();
     }
 
     onLevelUp(lvl, words){
-        this.__currentLevel = lvl;
-        this.__wordsGenerator = this.__getWordGenerator(words);
+        this.currentLevel = lvl;
+        this.wordsGenerator = this.getWordGenerator(words);
     }
 
     //generator
-    * __getWordGenerator(collection) {
+    * getWordGenerator(collection) {
         for(let s of collection){
             yield s;
         }
     };
-    __initGameLayout() {
-        this.__gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, this.__root);
-        this.__gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, this.__root);
+    initGameLayout() {
+        this.gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, this.root);
+        this.gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, this.root);
 
 
-        this.__scoreWraper = createAndAppend("div", {"class" : "row"}, this.__gameInfo);
-        this.__scoreLabel = createAndAppend("p", {"class": "col-5"}, this.__scoreWraper);
-        this.__scoreLabel.innerHTML = "Poeni: ";
-        this.__scoreElem = createAndAppend("p", {"class": "col"}, this.__scoreWraper);
+        this.scoreWraper = createAndAppend("div", {"class" : "row"}, this.gameInfo);
+        this.scoreLabel = createAndAppend("p", {"class": "col-5"}, this.scoreWraper);
+        this.scoreLabel.innerHTML = "Poeni: ";
+        this.scoreElem = createAndAppend("p", {"class": "col"}, this.scoreWraper);
 
-        this.__missedWraper = createAndAppend("div", {"class" : "row"}, this.__gameInfo);
-        this.__missedLabel = createAndAppend("p", {"class": "col-5"}, this.__missedWraper);
-        this.__missedLabel.innerHTML = "Promašaji: ";
-        this.__missedElem = createAndAppend("p", {"class": "col"}, this.__missedWraper);
+        this.missedWraper = createAndAppend("div", {"class" : "row"}, this.gameInfo);
+        this.missedLabel = createAndAppend("p", {"class": "col-5"}, this.missedWraper);
+        this.missedLabel.innerHTML = "Promašaji: ";
+        this.missedElem = createAndAppend("p", {"class": "col"}, this.missedWraper);
 
 
-        this.__missedElem.innerHTML = 0;
-        this.__scoreElem.innerHTML = 0;
-        this.__inputField = createAndAppend("input", {"type": "text", "class": "row ml-1 mt-1"}, this.__root);
+        this.missedElem.innerHTML = 0;
+        this.scoreElem.innerHTML = 0;
+        this.inputField = createAndAppend("input", {"type": "text", "class": "row ml-1 mt-1"}, this.root);
         //has to be lambda
-        this.__inputField.onkeypress = (e)=>this.__inputFieldOnPressHandler(e);
+        this.inputField.onkeypress = (e)=>this.inputFieldOnPressHandler(e);
     }
 
-    __inputFieldOnPressHandler(e){
+    inputFieldOnPressHandler(e){
         if(e.key === "Enter"){
-            let text = this.__inputField.value;
-            this.__inputField.value = "";
-            if(this.__wordObjectsOnScreen.hasOwnProperty(text)){
-                this.__score += this.__wordObjectsOnScreen[text].reward;
-                this.__wordObjectsOnScreen[text].erase();
-                this.__throwInTrashcan(text);
-                this.__levelsControler.handleCorrectWord();
-                this.__scoreElem.innerHTML = this.__score;
+            let text = this.inputField.value;
+            this.inputField.value = "";
+            if(this.wordObjectsOnScreen.hasOwnProperty(text)){
+                this.score += this.wordObjectsOnScreen[text].reward;
+                this.wordObjectsOnScreen[text].erase();
+                this.throwInTrashcan(text);
+                this.levelsControler.handleCorrectWord();
+                this.scoreElem.innerHTML = this.score;
             }
         }
     }
 
     //takes word(string), throws in trashcan object with that word
-    __throwInTrashcan(word){
-        let tmp = this.__wordObjectsOnScreen[word];
-        this.__wordObjectsOnScreen[word] = undefined;
-        delete this.__wordObjectsOnScreen[word];
-        this.__wordObjectsTrashcan.push(tmp);
+    throwInTrashcan(word){
+        let tmp = this.wordObjectsOnScreen[word];
+        this.wordObjectsOnScreen[word] = undefined;
+        delete this.wordObjectsOnScreen[word];
+        this.wordObjectsTrashcan.push(tmp);
     }
 
 
-    __gameOverCondition(){
-        return this.__missedCount > this.__score;
+    gameOverCondition(){
+        return this.missedCount > this.score;
     }
 
-    __onWordOutOfBounds(word){
-        this.__missedCount++;
-        this.__missedElem.innerHTML = this.__missedCount;
+    onWordOutOfBounds(word){
+        this.missedCount++;
+        this.missedElem.innerHTML = this.missedCount;
 
-        if((this.__gameOver = this.__gameOverCondition())){
-            for(let [k,v] of Object.entries(this.__wordObjectsOnScreen)){
+        if((this.gameOver = this.gameOverCondition())){
+            for(let [k,v] of Object.entries(this.wordObjectsOnScreen)){
                 v.erase();
             }
-            for(let v of this.__wordObjectsTrashcan){
+            for(let v of this.wordObjectsTrashcan){
                 v.erase();
             }
-            if(confirm("KRAJ! OSTVARILI STE " + this.__score + " POENA!\nDa li želite da krenete ponovo?")){
+            if(confirm("KRAJ! OSTVARILI STE " + this.score + " POENA!\nDa li želite da krenete ponovo?")){
                 this.reset();
             }
             else {
@@ -148,41 +147,41 @@ class Game {
         }
         else {
             //this is called only if it is not game over
-            this.__throwInTrashcan(word);
+            this.throwInTrashcan(word);
         }
     }
 
-    __wordInserter(){
+    wordInserter(){
 
-        let next = this.__wordsGenerator.next();
+        let next = this.wordsGenerator.next();
         if (next.done){
             return;
         }
         setTimeout(() => {
-            if(!this.__gameOver) {
+            if(!this.gameOver) {
                 let wordObj = next.value;
                 let word = wordObj.word;
-                if (this.__wordObjectsTrashcan.length === 0) {
-                    this.__wordObjectsOnScreen[word] = new Word(word, this.__gameField, this.__onWordOutOfBounds,
-                        this.__currentLevel.wordTimeout(), this.__currentLevel.reward);
+                if (this.wordObjectsTrashcan.length === 0) {
+                    this.wordObjectsOnScreen[word] = new Word(word, this.gameField, this.onWordOutOfBounds,
+                        this.currentLevel.wordTimeout(), this.currentLevel.reward);
                 } else {
-                    let tmp = this.__wordObjectsTrashcan.pop();
-                    tmp.changeWordAndRestart(word, this.__currentLevel.wordTimeout(), this.__currentLevel.reward);
-                    this.__wordObjectsOnScreen[word] = tmp;
+                    let tmp = this.wordObjectsTrashcan.pop();
+                    tmp.changeWordAndRestart(word, this.currentLevel.wordTimeout(), this.currentLevel.reward);
+                    this.wordObjectsOnScreen[word] = tmp;
                 }
-                this.__wordInserter();
+                this.wordInserter();
             }
-        }, Math.floor(randomInRange(this.__currentLevel.minSpawnPeriod, this.__currentLevel.maxSpawnPeriod)));
+        }, Math.floor(randomInRange(this.currentLevel.minSpawnPeriod, this.currentLevel.maxSpawnPeriod)));
     }
 
     //this function is given to user, he can start it but game won't begin until all data is ready
     start(){
-        this.__started = true;
-        this.__begin();
+        this.started = true;
+        this.begin();
     }
-    __begin(){
-        if(this.__started && this.__ready){
-            this.__wordInserter();
+    begin(){
+        if(this.started && this.ready){
+            this.wordInserter();
         }
     }
 }
