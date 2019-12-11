@@ -9,13 +9,13 @@ class Game {
                 this[p] = this[p].bind(this);
             }
         }
-        this.words = null;
-        //NOTE:
-        //THIS PATH/URL WORKS ON MY LOCAL MACHINE WHEN PROJECT IS RAN BY WEBSTORM
-        //for testing, either run in webstorm and possibly change port number or run by some other local
-        //server
-        let basePath = "http://localhost:63342/levi9-typespeed/data/";
-        $.get(basePath + "sr_measured.txt", (r)=>{
+        this.__words = null;
+        this.basePath = "http://localhost:1025/";
+        $.get(this.basePath + "results",(resp)=>{
+            console.log(resp);
+        });
+
+        $.get(this.basePath + "data/sr_measured.txt", (r)=>{
             let maxDiff = 0;
             let minDiff = 3000;
             this.words = r.split("\n").map((w)=>{
@@ -138,7 +138,14 @@ class Game {
             for(let v of this.wordObjectsTrashcan){
                 v.erase();
             }
-            if(confirm("KRAJ! OSTVARILI STE " + this.score + " POENA!\nDa li želite da krenete ponovo?")){
+            let name = prompt("KRAJ! OSTVARILI STE " + this.score + " POENA!\nUnesite svoje ime");
+            if(name !== null){
+                $.post(this.basePath + "results", {result: {name: name, score: this.score}}, (resp)=>{
+                    console.log(resp);
+                });
+
+            }
+            if(confirm("Da li želite da krenete ponovo?")){
                 this.reset();
             }
             else {
