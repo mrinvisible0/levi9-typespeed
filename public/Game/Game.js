@@ -20,15 +20,12 @@ class Game {
             }
         }
         this.__words = null;
-        $.post("http://localhost:1025/results", {score: this.__score}, (resp)=>{
+        this.basePath = "http://localhost:1025/";
+        $.get(this.basePath + "results",(resp)=>{
             console.log(resp);
         });
-        //NOTE:
-        //THIS PATH/URL WORKS ON MY LOCAL MACHINE WHEN PROJECT IS RAN BY WEBSTORM
-        //for testing, either run in webstorm and possibly change port number or run by some other local
-        //server
-        let basePath = "http://localhost:1025/data/";
-        $.get(basePath + "sr_measured.txt", (r)=>{
+
+        $.get(this.basePath + "data/sr_measured.txt", (r)=>{
             let maxDiff = 0;
             let minDiff = 3000;
             this.__words = r.split("\n").map((w)=>{
@@ -124,10 +121,13 @@ class Game {
             for(let [k,v] of Object.entries(this.__wordObjectsOnScreen)){
                 v.erase();
             }
-            $.post("localhost:1025/results", {score: this.__score}, (resp)=>{
-                console.log(resp);
-            });
-            alert("KRAJ! OSTVARILI STE " + this.__score + " POENA!");
+            let name = prompt("KRAJ! OSTVARILI STE " + this.__score + " POENA!\nUnesite svoje ime");
+            if(name !== null){
+                $.post(this.basePath + "results", {result: {name: name, score: this.__score}}, (resp)=>{
+                    console.log(resp);
+                });
+
+            }
             return;
         }
         //this is called only if it is not game over
