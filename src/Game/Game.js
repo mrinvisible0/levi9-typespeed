@@ -59,6 +59,7 @@ class Game {
     }
 
     reset(){
+        console.log("reset");
         this._setInitValues();
         this.__missedElem.innerHTML = 0;
         this.__scoreElem.innerHTML = 0;
@@ -122,6 +123,7 @@ class Game {
         this.__wordObjectsTrashcan.push(tmp);
     }
 
+
     __gameOverCondition(){
         return this.__missedCount > this.__score;
     }
@@ -134,6 +136,9 @@ class Game {
             for(let [k,v] of Object.entries(this.__wordObjectsOnScreen)){
                 v.erase();
             }
+            for(let v of this.__wordObjectsTrashcan){
+                v.erase();
+            }
             if(confirm("KRAJ! OSTVARILI STE " + this.__score + " POENA!\nDa li želite da krenete ponovo?")){
                 this.reset();
             }
@@ -141,11 +146,14 @@ class Game {
                 return;
             }
         }
-        //this is called only if it is not game over
-        this.__throwInTrashcan(word);
+        else {
+            //this is called only if it is not game over
+            this.__throwInTrashcan(word);
+        }
     }
 
     __wordInserter(){
+
         let next = this.__wordsGenerator.next();
         if (next.done){
             return;
