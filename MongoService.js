@@ -34,8 +34,8 @@ class MongoService{
         this.client.close();
     }
 
-    async getResults(){
-        return await this.db.collection("results").find().toArray();
+    getResults(){
+        return this.db.collection("results").find().toArray();
     }
     async insertResult(result){
         let resp = await this.db.collection("results").insertOne(result);
