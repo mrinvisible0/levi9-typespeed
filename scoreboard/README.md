@@ -1,4 +1,4 @@
-##REACT
+## REACT
 index.js represents current react scoreboard(work in progress)
 
 it is not typical react app because it is loaded into existing game(div with reactRoot id)
