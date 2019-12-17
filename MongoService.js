@@ -1,15 +1,6 @@
 const mongo = require("mongodb").MongoClient;
 const util = require("util");
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function sleepFor( sleepDuration ){
-    let now = new Date().getTime();
-    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ }
-}
-
 class MongoService{
     constructor(url, dbName){
         this.url = url;
