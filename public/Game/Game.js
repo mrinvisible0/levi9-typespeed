@@ -92,12 +92,13 @@ class Game {
         this.missedLabel.innerHTML = "Promašaji: ";
         this.missedElem = createAndAppend("p", {"class": "col"}, this.missedWraper);
 
-
+        this.reactRoot = createAndAppend("div", {"id": "reactRoot"}, this.gameInfo);
         this.missedElem.innerHTML = 0;
         this.scoreElem.innerHTML = 0;
         this.inputField = createAndAppend("input", {"type": "text", "class": "row ml-1 mt-1"}, this.root);
         //has to be lambda
         this.inputField.onkeypress = (e)=>this.inputFieldOnPressHandler(e);
+        loadReact();
     }
 
     inputFieldOnPressHandler(e){
