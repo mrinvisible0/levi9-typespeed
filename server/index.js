@@ -1,14 +1,14 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 const dbService = require("./MongoService");
-
+var path = require("path");
 const db = new dbService("mongodb://localhost:27017/typespeed", "typespeed");
 
 const port = 1025;
 let app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "/../client/typespeed/build")));
 
 app.get("/results", (req, resp)=>{
     db.getResults()
