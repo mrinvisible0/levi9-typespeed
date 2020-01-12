@@ -17,3 +17,5 @@ class Level{
         return this.wordSpeed;
     }
 }
+
+export default Level;

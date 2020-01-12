@@ -9,6 +9,8 @@ let app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, "/../client/typespeed/build")));
+//not a particularly good idea to do this but it is ok in this case
+app.use(express.static(path.join(__dirname, "./public")));
 
 app.get("/results", (req, resp)=>{
     db.getResults()

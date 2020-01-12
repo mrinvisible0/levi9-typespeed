@@ -1,3 +1,8 @@
+import $ from 'jquery';
+import {createAndAppend} from "../script.js";
+import LevelsController from"./LevelsController";
+import Word from"./Word";
+
 class Game {
     constructor() {
         this.root = $("#GameRoot")[0];
@@ -38,6 +43,7 @@ class Game {
             });
             this.levelsControler = new LevelsController(this.words, this.onLevelUp);
             this.ready = true;
+            console.log("ready");
             this.begin();
         });
 
@@ -145,7 +151,7 @@ class Game {
                 });
 
             }
-            if(confirm("Da li želite da krenete ponovo?")){
+            if(window.confirm("Da li želite da krenete ponovo?")){
                 this.reset();
             }
             else {
@@ -162,12 +168,14 @@ class Game {
 
         let next = this.wordsGenerator.next();
         if (next.done){
+            console.log("done");
             return;
         }
         setTimeout(() => {
             if(!this.gameOver) {
                 let wordObj = next.value;
                 let word = wordObj.word;
+                console.log("inserting " + word);
                 if (this.wordObjectsTrashcan.length === 0) {
                     this.wordObjectsOnScreen[word] = new Word(word, this.gameField, this.onWordOutOfBounds,
                         this.currentLevel.wordTimeout(), this.currentLevel.reward);
@@ -185,6 +193,7 @@ class Game {
     start(){
         this.started = true;
         this.begin();
+        console.log("start");
     }
     begin(){
         if(this.started && this.ready){
@@ -196,6 +205,8 @@ class Game {
 function randomInRange(min, max){
     return min + Math.random() * (max - min);
 }
+
+export default Game;
 
 
 
