@@ -16,9 +16,6 @@ class Game {
         }
         this.__words = null;
         this.basePath = "http://localhost:1025/";
-        $.get(this.basePath + "results",(resp)=>{
-            console.log(resp);
-        });
 
         $.get(this.basePath + "data/sr_measured.txt", (r)=>{
             let maxDiff = 0;
@@ -97,7 +94,7 @@ class Game {
         this.missedLabel.innerHTML = "Promašaji: ";
         this.missedElem = createAndAppend("p", {"class": "col"}, this.missedWraper);
 
-        this.reactRoot = createAndAppend("div", {"id": "scoreboard"}, this.gameInfo);
+        this.scoreboardRoot = createAndAppend("div", {"id": "scoreboard"}, this.gameInfo);
 
         this.missedElem.innerHTML = 0;
         this.scoreElem.innerHTML = 0;
