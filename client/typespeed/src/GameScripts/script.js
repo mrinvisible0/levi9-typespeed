@@ -8,8 +8,8 @@ function createAndAppend(tagName, attributes, appendTo){
     return el;
 }
 
-function load() {
+function initializeGame() {
     let g = new Game();
     g.start();
 }
-export {createAndAppend, load};
+export {createAndAppend, initializeGame};

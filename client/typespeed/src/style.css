@@ -22,3 +22,10 @@ input{
     border: #313131;
     color: white;
 }
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}

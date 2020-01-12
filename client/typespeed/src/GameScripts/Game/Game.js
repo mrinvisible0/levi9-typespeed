@@ -43,7 +43,6 @@ class Game {
             });
             this.levelsControler = new LevelsController(this.words, this.onLevelUp);
             this.ready = true;
-            console.log("ready");
             this.begin();
         });
 
@@ -98,6 +97,7 @@ class Game {
         this.missedLabel.innerHTML = "Promašaji: ";
         this.missedElem = createAndAppend("p", {"class": "col"}, this.missedWraper);
 
+        this.reactRoot = createAndAppend("div", {"id": "scoreboard"}, this.gameInfo);
 
         this.missedElem.innerHTML = 0;
         this.scoreElem.innerHTML = 0;
@@ -168,14 +168,12 @@ class Game {
 
         let next = this.wordsGenerator.next();
         if (next.done){
-            console.log("done");
             return;
         }
         setTimeout(() => {
             if(!this.gameOver) {
                 let wordObj = next.value;
                 let word = wordObj.word;
-                console.log("inserting " + word);
                 if (this.wordObjectsTrashcan.length === 0) {
                     this.wordObjectsOnScreen[word] = new Word(word, this.gameField, this.onWordOutOfBounds,
                         this.currentLevel.wordTimeout(), this.currentLevel.reward);
@@ -193,7 +191,6 @@ class Game {
     start(){
         this.started = true;
         this.begin();
-        console.log("start");
     }
     begin(){
         if(this.started && this.ready){
