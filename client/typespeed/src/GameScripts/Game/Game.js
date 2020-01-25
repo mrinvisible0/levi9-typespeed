@@ -80,8 +80,8 @@ class Game {
         }
     };
     initGameLayout() {
-        this.gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, this.root);
-        this.gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, this.root);
+        this.gameField = createAndAppend("div", {"class": "col-9 gameField"}, this.root);
+        this.gameInfo = createAndAppend("div", {"class": "col-3 gameInfo"}, this.root);
 
 
         this.scoreWraper = createAndAppend("div", {"class" : "row"}, this.gameInfo);
@@ -94,8 +94,7 @@ class Game {
         this.missedLabel.innerHTML = "Promašaji: ";
         this.missedElem = createAndAppend("p", {"class": "col"}, this.missedWraper);
 
-        this.scoreboardRoot = createAndAppend("div", {"id": "scoreboard"}, this.gameInfo);
-
+        this.scoreboardRoot = createAndAppend("div", { "id": "scoreboard" }, this.gameInfo);
         this.missedElem.innerHTML = 0;
         this.scoreElem.innerHTML = 0;
         this.inputField = createAndAppend("input", {"type": "text", "class": "row ml-1 mt-1"}, this.root);

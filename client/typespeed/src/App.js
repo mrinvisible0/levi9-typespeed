@@ -42,6 +42,7 @@ class App  extends React.Component{
         this.getData = this.getData.bind(this);
     }
     componentDidMount() {
+        document.title = "typespeed";
         //getData is async network operation so we will start it before we start initializing game
         this.getData();
         initializeGame();

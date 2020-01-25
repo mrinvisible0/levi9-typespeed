@@ -25,7 +25,10 @@ input{
 table {
     border-collapse: collapse;
 }
-
+#scoreboard{
+    height: 83%;
+    overflow-y: scroll;
+}
 table, th, td {
     border: 1px solid black;
 }
