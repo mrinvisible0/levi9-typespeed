@@ -15,6 +15,8 @@ app.use(express.static(path.join(__dirname, "./public")));
 app.get("/results", (req, resp)=>{
     db.getResults()
         .then((r)=>{
+			r = r.sort((a,b)=>{return parseInt(b.score) - parseInt(a.score)})
+			console.log(r);
             resp.send(r);
         })
         .catch((err)=>{
