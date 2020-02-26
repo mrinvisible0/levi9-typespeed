@@ -141,7 +141,7 @@ class Game {
                 v.erase();
             }
             let name = prompt("KRAJ! OSTVARILI STE " + this.score + " POENA!\nUnesite svoje ime");
-            if(name !== null){
+            if(name !== null && name !== ""){
                 $.post(this.basePath + "results", {result: {name: name, score: this.score}}, (resp)=>{
                     console.log(resp);
                 });

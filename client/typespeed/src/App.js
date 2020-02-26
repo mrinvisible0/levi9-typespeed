@@ -24,7 +24,7 @@ function Scoreboard({scores}){
             </tr>
             </thead>
             <tbody>
-            {res}
+				{res}
             </tbody>
         </table>
     );
@@ -52,9 +52,7 @@ class App  extends React.Component{
     }
 
     getData(){
-        console.log("cao");
         axios.get(this.basePath + "results").then((resp)=>{
-            console.log(resp);
             this.setState({
                 res:resp.data,
                 dataReady: true,
