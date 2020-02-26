@@ -1,14 +1,16 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 const dbService = require("./MongoService");
-
+var path = require("path");
 const db = new dbService("mongodb://localhost:27017/typespeed", "typespeed");
 
 const port = 1025;
 let app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "/../client/typespeed/build")));
+//not a particularly good idea to do this but it is ok in this case
+app.use(express.static(path.join(__dirname, "./public")));
 
 app.get("/results", (req, resp)=>{
     db.getResults()

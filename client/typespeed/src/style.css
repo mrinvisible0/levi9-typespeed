@@ -22,3 +22,13 @@ input{
     border: #313131;
     color: white;
 }
+table {
+    border-collapse: collapse;
+}
+#scoreboard{
+    height: 83%;
+    overflow-y: scroll;
+}
+table, th, td {
+    border: 1px solid black;
+}

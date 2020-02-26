@@ -1,3 +1,8 @@
+import $ from 'jquery';
+import {createAndAppend} from "../script.js";
+import LevelsController from"./LevelsController";
+import Word from"./Word";
+
 class Game {
     constructor() {
         this.root = $("#GameRoot")[0];
@@ -11,9 +16,6 @@ class Game {
         }
         this.__words = null;
         this.basePath = "http://localhost:1025/";
-        $.get(this.basePath + "results",(resp)=>{
-            console.log(resp);
-        });
 
         $.get(this.basePath + "data/sr_measured.txt", (r)=>{
             let maxDiff = 0;
@@ -78,8 +80,8 @@ class Game {
         }
     };
     initGameLayout() {
-        this.gameField = createAndAppend("div", {"class": "col-9 ml-1 mr-1 gameField"}, this.root);
-        this.gameInfo = createAndAppend("div", {"class": "col-2 ml-1 gameInfo"}, this.root);
+        this.gameField = createAndAppend("div", {"class": "col-9 gameField"}, this.root);
+        this.gameInfo = createAndAppend("div", {"class": "col-3 gameInfo"}, this.root);
 
 
         this.scoreWraper = createAndAppend("div", {"class" : "row"}, this.gameInfo);
@@ -92,7 +94,7 @@ class Game {
         this.missedLabel.innerHTML = "Promašaji: ";
         this.missedElem = createAndAppend("p", {"class": "col"}, this.missedWraper);
 
-
+        this.scoreboardRoot = createAndAppend("div", { "id": "scoreboard" }, this.gameInfo);
         this.missedElem.innerHTML = 0;
         this.scoreElem.innerHTML = 0;
         this.inputField = createAndAppend("input", {"type": "text", "class": "row ml-1 mt-1"}, this.root);
@@ -139,13 +141,13 @@ class Game {
                 v.erase();
             }
             let name = prompt("KRAJ! OSTVARILI STE " + this.score + " POENA!\nUnesite svoje ime");
-            if(name !== null){
+            if(name !== null && name !== ""){
                 $.post(this.basePath + "results", {result: {name: name, score: this.score}}, (resp)=>{
                     console.log(resp);
                 });
 
             }
-            if(confirm("Da li želite da krenete ponovo?")){
+            if(window.confirm("Da li želite da krenete ponovo?")){
                 this.reset();
             }
             else {
@@ -196,6 +198,8 @@ class Game {
 function randomInRange(min, max){
     return min + Math.random() * (max - min);
 }
+
+export default Game;
 
 
 

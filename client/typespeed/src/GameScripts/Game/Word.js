@@ -1,3 +1,4 @@
+import {createAndAppend} from "../script.js";
 class Word {
     constructor(word, parent, onFinished, timeout, reward){
         this.setWord(word);
@@ -55,3 +56,5 @@ class Word {
 
 
 }
+
+export default Word;

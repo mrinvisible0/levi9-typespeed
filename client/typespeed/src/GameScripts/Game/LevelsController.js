@@ -1,4 +1,4 @@
-
+import Level from "./Level";
 //takes sorted array (by difficulty) of words(or rather {word, diff} objects) and callback
 //on each level, it provides harder words
 class LevelsController{
@@ -22,7 +22,7 @@ class LevelsController{
         this.numberOfWordsForLevelUp = 5;
 
         //explicit bindings
-        for(let p of Object.getOwnPropertyNames(Game.prototype)) {
+        for(let p of Object.getOwnPropertyNames(LevelsController.prototype)) {
             if(p !== "constructor" && typeof this[p] === "function"){
                 this[p] = this[p].bind(this);
             }
@@ -60,3 +60,5 @@ class LevelsController{
     }
 
 }
+
+export default LevelsController;
